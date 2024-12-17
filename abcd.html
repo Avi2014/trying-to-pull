@@ -1,51 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-        }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 5px;
-        }
-        .cell {
-            width: 100px;
-            height: 100px;
-            background-color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            border: 2px solid #333;
-            cursor: pointer;
-        }
-        .cell:hover {
-            background-color: #e0e0e0;
-        }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+      }
+      .board {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 5px;
+      }
+      .cell {
+        width: 100px;
+        height: 100px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        border: 2px solid #333;
+        cursor: pointer;
+      }
+      .cell:hover {
+        background-color: #e0e0e0;
+      }
+      .message {
+        margin-top: 20px;
+        font-size: 1.5em;
+      }
     </style>
-</head>
-<body>
-    <div class="board">
-        <div class="cell">X</div>
-        <div class="cell">O</div>
-        <div class="cell">X</div>
-        <div class="cell">O</div>
-        <div class="cell">X</div>
-        <div class="cell">O</div>
-        <div class="cell">X</div>
-        <div class="cell">O</div>
-        <div class="cell">X</div>
+  </head>
+  <body>
+    <div class="board" id="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
     </div>
-</body>
+    <div class="message" id="message"></div>
+
+    <script>
+      const board = document.getElementById("board");
+      const messageDisplay = document.getElementById("message");
+      let boardState = ["", "", "", "", "", "", "", "", ""];
+      let currentPlayer = "X";
+      let isGameActive = true;
+
+      const winningConditions = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+      ];
+
+      function handleCellClick(event) {
+        const cell = event.target;
+        const index = cell.getAttribute("data-index");
+
+        if (boardState[index] !== "" || !isGameActive) {
+          return;
+        }
+
+        boardState[index] = currentPlayer;
+        cell.textContent = currentPlayer;
+        checkResult();
+      }
+
+      function checkResult() {
+        let roundWon = false;
+
+        for (let i = 0; i < winningConditions.length; i++) {
+          const [a, b, c] = winningConditions[i];
+          if (
+            boardState[a] === "" ||
+            boardState[b] === "" ||
+            boardState[c] === ""
+          ) {
+            continue;
+          }
+          if (
+            boardState[a] === boardState[b] &&
+            boardState[a] === boardState[c]
+          ) {
+            roundWon = true;
+            break;
+          }
+        }
+
+        if (roundWon) {
+          messageDisplay.textContent = `Player ${currentPlayer} wins!`;
+          isGameActive = false;
+          return;
+        }
+
+        if (!boardState.includes("")) {
+          messageDisplay.textContent = "It's a draw!";
+          isGameActive = false;
+          return;
+        }
+
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+      }
+
+      function initGame() {
+        boardState = ["", "", "", "", "", "", "", "", ""];
+        isGameActive = true;
+        currentPlayer = "X";
+        messageDisplay.textContent = "";
+        document.querySelectorAll(".cell").forEach((cell) => {
+          cell.textContent = "";
+        });
+      }
+
+      board.addEventListener("click", handleCellClick);
+      initGame();
+    </script>
+  </body>
 </html>
